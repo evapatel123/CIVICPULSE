@@ -124,4 +124,55 @@ with gr.Blocks(theme=gr.themes.Cyberpunk(), css=custom_css) as demo:
     user_session = gr.State("")
     
     gr.Markdown("# 🎨 **Skribbl.io Clone x Gen Z Bestie** 🚀", elem_id="title-md")
-    gr.Markdown("<p style='text-align: center; color: #b3b3cc;'>Draw, guess with your squad, and vibe with
+    gr.Markdown("<p style='text-align: center; color: #b3b3cc;'>Draw, guess with your squad, and vibe with your AI bestie who has literally zero filter.</p>")
+    
+    # --- STEP 1: LOGIN SECTION ---
+    with gr.Row() as login_row:
+        username_input = gr.Textbox(label="Enter your gamer tag:", placeholder="e.g., xX_NoobMaster_Xx")
+        btn_login = gr.Button("Join Lobby 🔥", variant="primary", elem_classes=["primary-btn"])
+
+    # --- STEP 2: MAIN GAME AREA ---
+    with gr.Row(visible=False) as game_row:
+        
+        # Left Side: Drawing Tool
+        with gr.Column(scale=2):
+            status_lbl = gr.Label("🎨 Current Drawer: System", label="Game Status")
+            drawing_pad = gr.Sketchpad(label="Draw here if it's your turn!", type="pil")
+            
+            with gr.Accordion("🤫 Drawer's Cheat Sheet (Click if you are drawing!)", open=False):
+                word_display = gr.Markdown(f"Your secret word to draw is: <span style='color: #00ffcc; font-size: 1.25rem;'>**{GAME_STATE['current_word']}**</span>")
+                btn_new_word = gr.Button("Skip / New Word 🔄")
+
+        # Right Side: Leaderboard & Chat Space
+        with gr.Column(scale=1):
+            leaderboard_box = gr.Textbox(label="Leaderboard", value="No players yet...", interactive=False, lines=5, elem_id="leaderboard-text")
+            
+            # REMOVED type="messages" to resolve the component initialization error
+            chat_space = gr.Chatbot(label="Main Chat & Guessing Arena")
+            guess_input = gr.Textbox(label="Type your guess or message here...", placeholder="Press Enter to send")
+            
+            btn_reset = gr.Button("Reset Board 🧹", elem_classes=["reset-btn"])
+
+    # --- EVENT FLOW CONTROL ---
+    def execution_login(name):
+        final_name = join_game(name)
+        return gr.update(visible=False), gr.update(visible=True), final_name
+        
+    btn_login.click(execution_login, inputs=[username_input], outputs=[login_row, game_row, user_session])
+    username_input.submit(execution_login, inputs=[username_input], outputs=[login_row, game_row, user_session])
+
+    guess_input.submit(handle_guess_or_chat, inputs=[user_session, guess_input], outputs=[guess_input])
+    
+    def skip_word():
+        GAME_STATE["current_word"] = random.choice(WORD_BANK)
+        return f"Your secret word to draw is: <span style='color: #00ffcc; font-size: 1.25rem;'>**{GAME_STATE['current_word']}**</span>"
+    btn_new_word.click(skip_word, outputs=[word_display])
+    
+    btn_reset.click(reset_game)
+
+    # AUTOMATIC REFRESH LOOP
+    auto_refresh = gr.Timer(value=1.0, active=True)
+    auto_refresh.tick(refresh_game_area, outputs=[leaderboard_box, chat_space, status_lbl])
+
+if __name__ == "__main__":
+    demo.launch()
