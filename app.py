@@ -39,15 +39,14 @@ def join_game(username):
 def refresh_game_area():
     leaderboard = "🏆 SCOREBOARD 🏆\n" + "\n".join([f"✨ {u}: {s} pts" for u, s in GAME_STATE["scores"].items()])
     
-    # Format the entire chat log safely as alternating display rows for the Chatbot component
     formatted_chat = []
     for user, msg in GAME_STATE["chat_history"]:
         if user == "🤖 ScribbleBuddy":
-            # Display bot comments on the assistant (right) side
-            formatted_chat.append((None, f"{msg}"))
+            # Bot messages go under the "assistant" role
+            formatted_chat.append({"role": "assistant", "content": f"**{user}**: {msg}"})
         else:
-            # Display user messages/guesses on the user (left) side
-            formatted_chat.append((f"**{user}**: {msg}", None))
+            # Player guesses and chats go under the "user" role
+            formatted_chat.append({"role": "user", "content": f"**{user}**: {msg}"})
             
     return leaderboard, formatted_chat, f"🎨 Current Drawer: {GAME_STATE['drawer']}"
 
