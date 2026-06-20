@@ -58,7 +58,7 @@ vibrant_theme = gr.themes.Default(
     button_secondary_text_color="white",
     input_background_fill="*neutral_800",
     input_border_color="*neutral_700",
-    radius_xxl="16px"                           # Ultra-modern rounded corners
+    radius_xl="16px"                            # FIXED: Changed from radius_xxl to radius_xl
 )
 
 # Custom injection CSS for gradient texts and visual tweaks
@@ -119,7 +119,7 @@ with gr.Blocks(theme=vibrant_theme, css=custom_css) as demo:
             with gr.Column(scale=1):
                 gr.Markdown("### 📊 Live AI Analysis Workspace")
                 
-                with gr.Box(): # Wraps output in a sleek container block
+                with gr.Group(): # FIXED: Changed from gr.Box() to gr.Group() for version compatibility
                     output_display = gr.Markdown(
                         value="*Analysis will appear here after you paste text and click 'Run AI Audit'.*",
                     )
