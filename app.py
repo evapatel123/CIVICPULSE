@@ -5,7 +5,7 @@ from huggingface_hub import InferenceClient
 # Initialize Hugging Face Client
 # Replace with your actual token or set the HF_TOKEN environment variable
 HF_TOKEN = os.getenv("HF_TOKEN", "YOUR_HF_TOKEN_HERE")
-client = InferenceClient(api_key=HF_TOKEN)
+client = InferenceClient("meta-llama/Meta-Llama-3-8B-Instruct-Chat",api_key=HF_TOKEN)
 
 # System prompts defining the "expert personas" for the multi-agent feel
 PERSONAS = {
