@@ -21,6 +21,7 @@ def analyze_civic_data(text_input, persona_choice, complexity_level):
     
     system_prompt = PERSONAS[persona_choice]
     user_prompt = (
+        f"{system_prompt}\n\n"
         f"Analyze the following text. Structure your response clearly using markdown headings, bullet points, and bold text. "
         f"Tailor the explanation level to a '{complexity_level}' audience.\n\n"
         f"Text to analyze:\n{text_input}"
@@ -40,12 +41,13 @@ def analyze_civic_data(text_input, persona_choice, complexity_level):
     except Exception as e:
         return f"❌ **An error occurred:** {str(e)}\n\nPlease ensure your Hugging Face Token is valid."
 
-# 🎨 Custom Cyber-Neon Styling Theme
+# 🎨 Clean, High-Readability Cyber Theme
+# Swapped to 'Inter' for crisp rendering and pixel-perfect legibility
 vibrant_theme = gr.themes.Default(
     primary_hue="fuchsia",
     secondary_hue="cyan",
     neutral_hue="slate",
-    font=[gr.themes.GoogleFont("Orbitron"), "ui-sans-serif", "system-ui"]
+    font=[gr.themes.GoogleFont("Inter"), "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"]
 ).set(
     body_background_fill="#07080a",       # Deep space black
     block_background_fill="#0d0e12",      # Deep obsidian cards
@@ -55,7 +57,7 @@ vibrant_theme = gr.themes.Default(
     input_border_color="#00f3ff",         # Cyber cyan input borders
 )
 
-# Custom injection CSS for animated gradients, neon glows, and custom button animations
+# Custom injection CSS for clean layout alignments and vibrant colors without blur
 custom_css = """
 footer {visibility: hidden}
 .container { max-width: 1200px; margin: auto; padding-top: 40px; }
@@ -72,59 +74,51 @@ footer {visibility: hidden}
     animation: gradient-shift 10s ease infinite;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 3.5rem;
-    font-weight: 900;
+    font-size: 3.2rem;
+    font-weight: 800;
     text-align: center;
     margin-bottom: 5px;
-    letter-spacing: 2px;
-    filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.2));
+    letter-spacing: -0.5px;
 }
 .subtitle-text {
     text-align: center;
     color: #a5b4fc;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     margin-bottom: 40px;
 }
 
-/* Neon Glow Cards */
-.gradio-container {
-    box-shadow: 0 0 30px rgba(255, 0, 127, 0.1) inset;
-}
-
-/* Styled Section Headers */
+/* Styled Section Headers - High Contrast */
 h3 {
     color: #00f3ff !important;
-    text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
-    font-weight: bold;
-    letter-spacing: 1px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
 }
 
-/* Futuristic Styled Buttons */
+/* High-Contrast Crisp Buttons */
 .cyber-btn-primary {
     background: linear-gradient(135deg, #ff007f 0%, #7000ff 100%) !important;
     border: none !important;
-    box-shadow: 0 0 15px rgba(255, 0, 127, 0.4) !important;
-    transition: all 0.3s ease-in-out !important;
-    font-weight: bold !important;
+    transition: all 0.2s ease-in-out !important;
+    font-weight: 700 !important;
 }
 .cyber-btn-primary:hover {
-    transform: scale(1.03) !important;
-    box-shadow: 0 0 25px rgba(255, 0, 127, 0.7) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(255, 0, 127, 0.4) !important;
 }
 
 .cyber-btn-secondary {
     background: linear-gradient(135deg, #00f3ff 0%, #0070ff 100%) !important;
     color: #000 !important;
     border: none !important;
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4) !important;
-    transition: all 0.3s ease-in-out !important;
-    font-weight: bold !important;
+    transition: all 0.2s ease-in-out !important;
+    font-weight: 700 !important;
 }
 .cyber-btn-secondary:hover {
-    transform: scale(1.03) !important;
-    box-shadow: 0 0 25px rgba(0, 243, 255, 0.7) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(0, 243, 255, 0.4) !important;
 }
 """
 
@@ -133,7 +127,7 @@ with gr.Blocks(theme=vibrant_theme, css=custom_css) as demo:
     
     with gr.Column(elem_classes="container"):
         # Header Section with Gradient Title
-        gr.HTML("<h1 class='gradient-title'>⚡ CIVICPULSE AI ⚡</h1>")
+        gr.HTML("<h1 class='gradient-title'>🏛️ CIVICPULSE AI</h1>")
         gr.HTML("<p class='subtitle-text'>Demystifying Local Government // Transparent Communities</p>")
         
         with gr.Row():
@@ -178,7 +172,7 @@ with gr.Blocks(theme=vibrant_theme, css=custom_css) as demo:
                     action_btn = gr.Button("📝 Draft Public Comment Letter", variant="secondary", size="md", elem_classes="cyber-btn-secondary")
 
         # Bottom Architecture Block
-        gr.Markdown("<br><hr style='border-color: #ff007f; opacity: 0.3;'><br>")
+        gr.Markdown("<br><hr style='border-color: #ff007f; opacity: 0.2;'><br>")
         
         with gr.Accordion("🛠️ Enterprise Architecture & Technical Spec", open=False):
             gr.Markdown(
@@ -204,4 +198,4 @@ with gr.Blocks(theme=vibrant_theme, css=custom_css) as demo:
     )
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch()     
