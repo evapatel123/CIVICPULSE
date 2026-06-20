@@ -5,7 +5,9 @@ from huggingface_hub import InferenceClient
 # Initialize Hugging Face Client
 # Replace with your actual token or set the HF_TOKEN environment variable
 HF_TOKEN = os.getenv("HF_TOKEN", "YOUR_HF_TOKEN_HERE")
-client = InferenceClient("meta-llama/Meta-Llama-3-8B-Instruct-Chat",api_key=HF_TOKEN)
+MODEL_ID = "meta-llama/Meta-Llama-3-8B-Instruct"
+
+client = InferenceClient(model=MODEL_ID, api_key=HF_TOKEN)
 
 # System prompts defining the "expert personas" for the multi-agent feel
 PERSONAS = {
@@ -19,22 +21,24 @@ def analyze_civic_data(text_input, persona_choice, complexity_level):
         return "⚠️ **Please provide some text or a transcript to analyze.**"
     
     system_prompt = PERSONAS[persona_choice]
-    full_prompt = (
-        f"{system_prompt}\n\n"
+    user_prompt = (
         f"Analyze the following text. Structure your response clearly using markdown headings, bullet points, and bold text. "
         f"Tailor the explanation level to a '{complexity_level}' audience.\n\n"
         f"Text to analyze:\n{text_input}"
     )
     
     try:
-        response = client.text_generation(
-            model="meta-llama/Meta-Llama-3-8B-Instruct",
-            prompt=full_prompt,
-            max_new_tokens=1024,
-            temperature=0.3, 
+        # Use chat_completion for instruct/chat models to prevent task-support errors
+        response = client.chat_completion(
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            max_tokens=1024,
+            temperature=0.3,
             top_p=0.9
         )
-        return response
+        return response.choices[0].message.content
     except Exception as e:
         return f"❌ **An error occurred:** {str(e)}\n\nPlease ensure your Hugging Face Token is valid."
 
@@ -118,7 +122,7 @@ with gr.Blocks(theme=vibrant_theme, css=custom_css) as demo:
             with gr.Column(scale=1):
                 gr.Markdown("### 📊 Live AI Analysis Workspace")
                 
-                with gr.Group(): # FIXED: Changed from gr.Box() to gr.Group() for version compatibility
+                with gr.Group(): 
                     output_display = gr.Markdown(
                         value="*Analysis will appear here after you paste text and click 'Run AI Audit'.*",
                     )
