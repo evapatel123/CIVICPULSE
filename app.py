@@ -57,8 +57,7 @@ vibrant_theme = gr.themes.Default(
     button_secondary_background_fill_hover="*secondary_500",
     button_secondary_text_color="white",
     input_background_fill="*neutral_800",
-    input_border_color="*neutral_700",
-    radius_xl="16px"                            # FIXED: Changed from radius_xxl to radius_xl
+    input_border_color="*neutral_700"
 )
 
 # Custom injection CSS for gradient texts and visual tweaks
