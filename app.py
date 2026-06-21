@@ -21,7 +21,7 @@ SAMPLE_DATA = {
 }
 
 def analyze_civic_data(text_input, persona_choice, complexity_level):
-    if not text_input.strip():
+    if not text_input or not text_input.strip():
         return "⚠️ **Please provide some text or a transcript to analyze.**"
     
     system_prompt = PERSONAS[persona_choice]
@@ -47,7 +47,7 @@ def analyze_civic_data(text_input, persona_choice, complexity_level):
         return f"❌ **An error occurred:** {str(e)}\n\nPlease ensure your Hugging Face Token is valid."
 
 def run_multi_agent_debate(text_input):
-    if not text_input.strip():
+    if not text_input or not text_input.strip():
         return "⚠️ **Please provide a text or proposal to debate.**"
     
     prompt = (
@@ -165,7 +165,8 @@ footer { visibility: hidden !important; }
 }
 """
 
-with gr.Blocks(theme=cyber_theme, css=custom_css) as demo:
+# Theme and CSS removed from constructor here
+with gr.Blocks() as demo:
     with gr.Column(elem_classes="container"):
         # Header System
         gr.HTML("<h1 class='glitch-title'>⚡ CIVICPULSE // OS</h1>")
@@ -192,11 +193,11 @@ with gr.Blocks(theme=cyber_theme, css=custom_css) as demo:
                     with gr.Column(scale=1):
                         gr.Markdown("### 📥 Document Intake Node")
                         
-                        # Added Feature: Quick Sample loader for better user onboarding
+                        # Fixed dropdown argument bug
                         sample_selector = gr.Dropdown(
                             choices=list(SAMPLE_DATA.keys()),
                             label="⚡ Quick Load Demo Dataset",
-                            placeholder="Select a preloaded policy record..."
+                            filterable=True
                         )
                         
                         text_input = gr.Textbox(
@@ -233,7 +234,7 @@ with gr.Blocks(theme=cyber_theme, css=custom_css) as demo:
                         with gr.Row():
                             action_btn = gr.Button("📝 DRAFT CIVIC ACTION LETTER", variant="secondary", elem_classes="cyber-btn-sec")
             
-            # TAB 2: Multi-Agent Cross Examination (New Feature)
+            # TAB 2: Multi-Agent Cross Examination
             with gr.TabItem("⚔️ MULTI-AGENT DEBATE ENGINE"):
                 gr.Markdown("### 🧠 Automated Hegelian Dialectic Console")
                 gr.Markdown("Synthesize objective truth by forcing multiple specialized personas to debate the policy proposal from conflicting perspectives.")
@@ -252,23 +253,22 @@ with gr.Blocks(theme=cyber_theme, css=custom_css) as demo:
 
             # TAB 3: Tech Spec & Node Infrastructure
             with gr.TabItem("🛠️ ARCHITECTURE SPECIFICATION"):
-                with gr.Box():
-                    gr.Markdown(
-                        """
-                        ### 🎛️ System Configuration Matrix
-                        
-                        | Layer | Protocol | Function |
-                        | :--- | :--- | :--- |
-                        | **UI Frontend Layer** | Gradio Blocks 5.0 | High-readability responsive UI layout framework |
-                        | **Inference Pipeline** | Hugging Face Serverless API | Handles low-latency token streaming and model routing |
-                        | **Semantic Parser** | Meta-Llama-3-8B-Instruct | Deep structural analysis of complex legalese |
-                        | **Design Theme** | Custom Cyberpunk CSS Core | Tailored styles avoiding bloom effects for ideal pixel rendering |
-                        
-                        ### 🔒 Privacy Guard Informational Node
-                        * All input parsing sessions operate stateless over secure TLS endpoints. 
-                        * Local analysis runs on zero-compute structures directly utilizing distributed open-weight inference hardware clusters.
-                        """
-                    )
+                gr.Markdown(
+                    """
+                    ### 🎛️ System Configuration Matrix
+                    
+                    | Layer | Protocol | Function |
+                    | :--- | :--- | :--- |
+                    | **UI Frontend Layer** | Gradio Blocks 6.0 | High-readability responsive UI layout framework |
+                    | **Inference Pipeline** | Hugging Face Serverless API | Handles low-latency token streaming and model routing |
+                    | **Semantic Parser** | Meta-Llama-3-8B-Instruct | Deep structural analysis of complex legalese |
+                    | **Design Theme** | Custom Cyberpunk CSS Core | Tailored styles avoiding bloom effects for ideal pixel rendering |
+                    
+                    ### 🔒 Privacy Guard Informational Node
+                    * All input parsing sessions operate stateless over secure TLS endpoints. 
+                    * Local analysis runs on zero-compute structures directly utilizing distributed open-weight inference hardware clusters.
+                    """
+                )
         
         # System Footer
         gr.Markdown("<br><hr style='border-color: #ff007f; opacity: 0.1;'><br>")
@@ -276,28 +276,24 @@ with gr.Blocks(theme=cyber_theme, css=custom_css) as demo:
 
     # --- Event Wiring Logic ---
     
-    # Fast-load sample datasets
     sample_selector.change(
         fn=load_sample,
         inputs=[sample_selector],
         outputs=[text_input]
     )
     
-    # Core Auditing Hook
     analyze_btn.click(
         fn=analyze_civic_data,
         inputs=[text_input, persona_choice, complexity_level],
         outputs=output_display
     )
     
-    # Action Overrides Routing Hook
     action_btn.click(
         fn=lambda text: analyze_civic_data(text, "Action Advocate", "General Public"),
         inputs=[text_input],
         outputs=output_display
     )
     
-    # Multi-Agent Debate Engine Execution Hook
     run_debate_btn.click(
         fn=run_multi_agent_debate,
         inputs=[debate_input],
@@ -305,4 +301,5 @@ with gr.Blocks(theme=cyber_theme, css=custom_css) as demo:
     )
 
 if __name__ == "__main__":
-    demo.launch()
+    # Theme and CSS injected into launch() to adhere to Gradio specifications
+    demo.launch(theme=cyber_theme, css=custom_css)
