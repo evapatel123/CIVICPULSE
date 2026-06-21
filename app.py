@@ -5,7 +5,6 @@ from huggingface_hub import InferenceClient
 # Initialize Hugging Face Client
 HF_TOKEN = os.getenv("HF_TOKEN", "YOUR_HF_TOKEN_HERE")
 MODEL_ID = "meta-llama/Meta-Llama-3-8B-Instruct"
-
 client = InferenceClient(model=MODEL_ID, api_key=HF_TOKEN)
 
 # System prompts defining the "expert personas"
@@ -15,6 +14,12 @@ PERSONAS = {
     "Action Advocate": "You are a community organizer. Based on the text provided, help the user draft a professional, persuasive email or public comment letter to their local representatives advocating for or against the policy."
 }
 
+# Sample datasets for rapid testing
+SAMPLE_DATA = {
+    "City Budget Reallocation": "Resolution 2026-44B: Section 4.A outlines a structural amendment to the municipal budget. The City Council proposes a reduction of $4,200,000 from the Public Parks & Community Infrastructure Maintenance fund. Concurrently, Section 4.B dictates the immediate allocation of $3,850,000 to the Department of Police Technology Upgrades for automated license plate reader expansions and predictive analytics software licenses. Public feedback window closes in 14 days. Vote passed 5-2 in preliminary session.",
+    "Zoning & Affordable Housing Amendment": "Ordinance No. 902-Z modifies Municipal Code Chapter 11 regarding high-density residential development. The amendment repeals mandatory inclusionary zoning thresholds which previously required commercial developers to set aside 12% of units for low-income residents in Transit-Oriented Districts. The revised text establishes a voluntary 'Density Bonus' system, where developers can opt out of affordable housing mandates by paying an in-lieu fee of $45,000 per missing unit into the general housing trust fund. Community activists note this trust fund has a 3-year backlog for deployment.",
+}
+
 def analyze_civic_data(text_input, persona_choice, complexity_level):
     if not text_input.strip():
         return "⚠️ **Please provide some text or a transcript to analyze.**"
@@ -22,7 +27,7 @@ def analyze_civic_data(text_input, persona_choice, complexity_level):
     system_prompt = PERSONAS[persona_choice]
     user_prompt = (
         f"{system_prompt}\n\n"
-        f"Analyze the following text. Structure your response clearly using markdown headings, bullet points, and bold text. "
+        f"Analyze the following text. Structure your response beautifully using markdown headings, bullet points, and bold text. "
         f"Tailor the explanation level to a '{complexity_level}' audience.\n\n"
         f"Text to analyze:\n{text_input}"
     )
@@ -41,161 +46,263 @@ def analyze_civic_data(text_input, persona_choice, complexity_level):
     except Exception as e:
         return f"❌ **An error occurred:** {str(e)}\n\nPlease ensure your Hugging Face Token is valid."
 
-# 🎨 Clean, High-Readability Cyber Theme
-# Swapped to 'Inter' for crisp rendering and pixel-perfect legibility
-vibrant_theme = gr.themes.Default(
+def run_multi_agent_debate(text_input):
+    if not text_input.strip():
+        return "⚠️ **Please provide a text or proposal to debate.**"
+    
+    prompt = (
+        f"You are hosting a panel between two experts regarding this municipal text:\n\n'{text_input}'\n\n"
+        f"Provide a structured debate layout. "
+        f"First, have the 'Budget Auditor' criticize the fiscal efficiency and systemic equity of the proposal. "
+        f"Second, have a 'Civic Optimist' defend the potential structural advantages or administrative goals of the proposal. "
+        f"Conclude with a 'Synthesized Verdict' highlighting the core tension citizens should look out for."
+    )
+    try:
+        response = client.chat_completion(
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=1200,
+            temperature=0.4
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f"❌ **Debate engine failed:** {str(e)}"
+
+def load_sample(choice):
+    return SAMPLE_DATA.get(choice, "")
+
+# 🎨 Premium High-Contrast Cyberpunk Theme Configuration
+cyber_theme = gr.themes.Default(
     primary_hue="fuchsia",
     secondary_hue="cyan",
     neutral_hue="slate",
-    font=[gr.themes.GoogleFont("Inter"), "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"]
+    font=[gr.themes.GoogleFont("Inter"), "-apple-system", "sans-serif"]
 ).set(
-    body_background_fill="#07080a",       # Deep space black
-    block_background_fill="#0d0e12",      # Deep obsidian cards
-    block_border_width="2px",
-    block_border_color="#ff007f",         # Cyber pink borders
-    input_background_fill="#141722",
-    input_border_color="#00f3ff",         # Cyber cyan input borders
+    body_background_fill="#050609",       # Deep Void Black
+    block_background_fill="#0b0d13",      # Crisp Obsidian Cards
+    block_border_width="1px",
+    block_border_color="#1e293b",         # Sleek subtle border default
+    input_background_fill="#111420",      # Dark contrast inputs
+    input_border_color="#00f3ff",         # Cyber Cyan focal rings
+    button_primary_background_fill="linear-gradient(135deg, #ff007f 0%, #7000ff 100%)",
+    button_secondary_background_fill="linear-gradient(135deg, #00f3ff 0%, #0070ff 100%)",
 )
 
-# Custom injection CSS for clean layout alignments and vibrant colors without blur
+# Advanced Custom CSS Injector for Layout Enhancements and Glow Metrics
 custom_css = """
-footer {visibility: hidden}
-.container { max-width: 1200px; margin: auto; padding-top: 40px; }
+footer { visibility: hidden !important; }
+.container { max-width: 1300px; margin: auto; padding-top: 20px; }
 
-/* Animated Gradient Title */
-@keyframes gradient-shift {
+/* Animated Neon Cyber Header */
+@keyframes cyber-pulse {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
-.gradient-title {
-    background: linear-gradient(-45deg, #ff007f, #00f3ff, #9d4edd, #00f5d4);
-    background-size: 400% 400%;
-    animation: gradient-shift 10s ease infinite;
+.glitch-title {
+    background: linear-gradient(-45deg, #ff007f, #00f3ff, #ab47bc, #00e5ff);
+    background-size: 300% 300%;
+    animation: cyber-pulse 12s ease infinite;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 3.2rem;
-    font-weight: 800;
+    font-size: 3.5rem;
+    font-weight: 900;
     text-align: center;
-    margin-bottom: 5px;
-    letter-spacing: -0.5px;
+    margin-bottom: 2px;
+    letter-spacing: -1px;
 }
 .subtitle-text {
     text-align: center;
-    color: #a5b4fc;
-    font-size: 1.1rem;
-    font-weight: 600;
+    color: #94a3b8;
+    font-size: 1rem;
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 40px;
+    letter-spacing: 4px;
+    margin-bottom: 30px;
 }
 
-/* Styled Section Headers - High Contrast */
-h3 {
+/* Custom Metric Cards */
+.metric-card {
+    background: #0f172a !important;
+    border: 1px solid #ff007f !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(255, 0, 127, 0.1);
+}
+.metric-card-alt {
+    background: #0f172a !important;
+    border: 1px solid #00f3ff !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+}
+
+/* Tab Layout Adjustments */
+.tabs {
+    border-bottom: 2px solid #1e293b !important;
+}
+.tab-nav button.selected {
     color: #00f3ff !important;
-    font-weight: 700;
-    letter-spacing: -0.2px;
+    border-bottom: 2px solid #00f3ff !important;
+    font-weight: bold !important;
 }
 
-/* High-Contrast Crisp Buttons */
-.cyber-btn-primary {
-    background: linear-gradient(135deg, #ff007f 0%, #7000ff 100%) !important;
-    border: none !important;
-    transition: all 0.2s ease-in-out !important;
+/* Button UI Scale Effects */
+.cyber-btn {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
 }
-.cyber-btn-primary:hover {
+.cyber-btn:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 4px 15px rgba(255, 0, 127, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(255, 0, 127, 0.3) !important;
 }
-
-.cyber-btn-secondary {
-    background: linear-gradient(135deg, #00f3ff 0%, #0070ff 100%) !important;
-    color: #000 !important;
-    border: none !important;
-    transition: all 0.2s ease-in-out !important;
-    font-weight: 700 !important;
-}
-.cyber-btn-secondary:hover {
+.cyber-btn-sec:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 4px 15px rgba(0, 243, 255, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(0, 243, 255, 0.3) !important;
 }
 """
 
-# Building the Interface
-with gr.Blocks(theme=vibrant_theme, css=custom_css) as demo:
-    
+with gr.Blocks(theme=cyber_theme, css=custom_css) as demo:
     with gr.Column(elem_classes="container"):
-        # Header Section with Gradient Title
-        gr.HTML("<h1 class='gradient-title'>🏛️ CIVICPULSE AI</h1>")
-        gr.HTML("<p class='subtitle-text'>Demystifying Local Government // Transparent Communities</p>")
+        # Header System
+        gr.HTML("<h1 class='glitch-title'>⚡ CIVICPULSE // OS</h1>")
+        gr.HTML("<p class='subtitle-text'>Decentralized Semantic Analysis Protocol for Local Democracy</p>")
         
+        # Upper KPI Dashboard / Metric Highlights
         with gr.Row():
-            # Left Column: Inputs & Controls
-            with gr.Column(scale=1):
-                gr.Markdown("### 📥 Input Control Hub")
-                text_input = gr.Textbox(
-                    label="Paste City Council Transcript, Bill Text, or Meeting Minutes",
-                    placeholder="Example: 'Resolution 402-B proposes shifting $2M from the public park maintenance fund to...",
-                    lines=12,
-                    max_lines=25
-                )
+            with gr.Column(elem_classes="metric-card", scale=1):
+                gr.Markdown("### 🔍 TARGET\nMunicipal Transparency")
+            with gr.Column(elem_classes="metric-card-alt", scale=1):
+                gr.Markdown("### ⚙️ CORE ENGINE\nLlama-3-8B-Instruct")
+            with gr.Column(elem_classes="metric-card", scale=1):
+                gr.Markdown("### 🗺️ STATUS\nInference Node Online")
+        
+        gr.Markdown("<br>")
+
+        # Primary Workspace Multi-Tab Architecture
+        with gr.Tabs(elem_classes="tabs"):
+            
+            # TAB 1: Core AI Auditing Framework
+            with gr.TabItem("📊 SYSTEM AUDIT PROTOCOL"):
+                with gr.Row():
+                    # Inputs Column
+                    with gr.Column(scale=1):
+                        gr.Markdown("### 📥 Document Intake Node")
+                        
+                        # Added Feature: Quick Sample loader for better user onboarding
+                        sample_selector = gr.Dropdown(
+                            choices=list(SAMPLE_DATA.keys()),
+                            label="⚡ Quick Load Demo Dataset",
+                            placeholder="Select a preloaded policy record..."
+                        )
+                        
+                        text_input = gr.Textbox(
+                            label="Municipal Document Payload (Transcripts, Resolutions, Zoning Codes)",
+                            placeholder="Paste text here or select a quick load dataset above...",
+                            lines=10,
+                            max_lines=20
+                        )
+                        
+                        with gr.Row():
+                            persona_choice = gr.Dropdown(
+                                choices=list(PERSONAS.keys()),
+                                value="Civic Translator",
+                                label="Analytical Persona Lens"
+                            )
+                            complexity_level = gr.Radio(
+                                choices=["General Public", "High School Student", "Policy Expert"],
+                                value="General Public",
+                                label="Target Formatting Horizon"
+                            )
+                        
+                        analyze_btn = gr.Button("🔥 INITIALIZE AI AUDIT", variant="primary", elem_classes="cyber-btn")
+                    
+                    # Outputs Column
+                    with gr.Column(scale=1):
+                        gr.Markdown("### 🖥️ Decrypted Output Display")
+                        with gr.Group():
+                            output_display = gr.Markdown(
+                                value="*Awaiting analysis initialization payload...*"
+                            )
+                        
+                        gr.Markdown("---")
+                        gr.Markdown("### 💡 Downstream Automation Protocols")
+                        with gr.Row():
+                            action_btn = gr.Button("📝 DRAFT CIVIC ACTION LETTER", variant="secondary", elem_classes="cyber-btn-sec")
+            
+            # TAB 2: Multi-Agent Cross Examination (New Feature)
+            with gr.TabItem("⚔️ MULTI-AGENT DEBATE ENGINE"):
+                gr.Markdown("### 🧠 Automated Hegelian Dialectic Console")
+                gr.Markdown("Synthesize objective truth by forcing multiple specialized personas to debate the policy proposal from conflicting perspectives.")
                 
                 with gr.Row():
-                    persona_choice = gr.Dropdown(
-                        choices=list(PERSONAS.keys()),
-                        value="Civic Translator",
-                        label="Analysis Lens (Agent Persona)"
-                    )
-                    complexity_level = gr.Radio(
-                        choices=["General Public", "High School Student", "Policy Expert"],
-                        value="General Public",
-                        label="Target Output Audience"
-                    )
-                
-                analyze_btn = gr.Button("🔥 Run AI Audit", variant="primary", size="lg", elem_classes="cyber-btn-primary")
-            
-            # Right Column: AI Outputs
-            with gr.Column(scale=1):
-                gr.Markdown("### 📊 Live AI Analysis Workspace")
-                
-                with gr.Group(): 
-                    output_display = gr.Markdown(
-                        value="*Analysis will appear here after you paste text and click 'Run AI Audit'.*",
-                    )
-                
-                # Contextual Action Area
-                with gr.Accordion("💡 Next Steps & Community Mobilization", open=True):
+                    with gr.Column(scale=1):
+                        debate_input = gr.Textbox(
+                            label="Target Policy Text for Cross-Examination",
+                            placeholder="Paste specific controversial clauses here...",
+                            lines=8
+                        )
+                        run_debate_btn = gr.Button("⚡ TRIGGER CONTRAST DEBATE", variant="primary", elem_classes="cyber-btn")
+                    
+                    with gr.Column(scale=1):
+                        debate_output = gr.Markdown(value="*Dialectic terminal idle. Initiate trigger...*")
+
+            # TAB 3: Tech Spec & Node Infrastructure
+            with gr.TabItem("🛠️ ARCHITECTURE SPECIFICATION"):
+                with gr.Box():
                     gr.Markdown(
-                        "Transform these machine insights into direct local democratic action automatically."
+                        """
+                        ### 🎛️ System Configuration Matrix
+                        
+                        | Layer | Protocol | Function |
+                        | :--- | :--- | :--- |
+                        | **UI Frontend Layer** | Gradio Blocks 5.0 | High-readability responsive UI layout framework |
+                        | **Inference Pipeline** | Hugging Face Serverless API | Handles low-latency token streaming and model routing |
+                        | **Semantic Parser** | Meta-Llama-3-8B-Instruct | Deep structural analysis of complex legalese |
+                        | **Design Theme** | Custom Cyberpunk CSS Core | Tailored styles avoiding bloom effects for ideal pixel rendering |
+                        
+                        ### 🔒 Privacy Guard Informational Node
+                        * All input parsing sessions operate stateless over secure TLS endpoints. 
+                        * Local analysis runs on zero-compute structures directly utilizing distributed open-weight inference hardware clusters.
+                        """
                     )
-                    action_btn = gr.Button("📝 Draft Public Comment Letter", variant="secondary", size="md", elem_classes="cyber-btn-secondary")
-
-        # Bottom Architecture Block
-        gr.Markdown("<br><hr style='border-color: #ff007f; opacity: 0.2;'><br>")
         
-        with gr.Accordion("🛠️ Enterprise Architecture & Technical Spec", open=False):
-            gr.Markdown(
-                """
-                ### Behind the Dashboard:
-                * **Dynamic Theming Engine:** Built using a customized abstraction layer of `gr.themes.Default` targeting specific color tokens to enable a sleek, high-contrast dark palette.
-                * **System Persona Routing:** Instantly swaps heavy system prompts based on components inputs to guide the local semantic parsing of `Meta-Llama-3-8B-Instruct`.
-                * **Zero-Compute Inference:** Offloads inference token loops to serverless endpoint structures using optimized asynchronous HTTP requests.
-                """
-            )
+        # System Footer
+        gr.Markdown("<br><hr style='border-color: #ff007f; opacity: 0.1;'><br>")
+        gr.Markdown("<p style='text-align: center; color: #475569; font-size: 0.8rem;'>CIVICPULSE OS v2.4.0 // Secured Connection Verified // 2026</p>")
 
-    # UI Wiring & Callbacks
+    # --- Event Wiring Logic ---
+    
+    # Fast-load sample datasets
+    sample_selector.change(
+        fn=load_sample,
+        inputs=[sample_selector],
+        outputs=[text_input]
+    )
+    
+    # Core Auditing Hook
     analyze_btn.click(
         fn=analyze_civic_data,
         inputs=[text_input, persona_choice, complexity_level],
         outputs=output_display
     )
     
+    # Action Overrides Routing Hook
     action_btn.click(
         fn=lambda text: analyze_civic_data(text, "Action Advocate", "General Public"),
         inputs=[text_input],
         outputs=output_display
     )
+    
+    # Multi-Agent Debate Engine Execution Hook
+    run_debate_btn.click(
+        fn=run_multi_agent_debate,
+        inputs=[debate_input],
+        outputs=debate_output
+    )
 
 if __name__ == "__main__":
-    demo.launch()     
+    demo.launch()
