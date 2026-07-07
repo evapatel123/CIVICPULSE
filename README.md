@@ -1,3 +1,56 @@
+# CIVICPULSE
+
+An AI-powered civic engagement platform that helps users better understand government, public policies, elections, and civic processes through natural language conversations.
+
+---
+
+## Live Demo
+
+https://huggingface.co/spaces/eva1267890/CIVICPULSE
+
+---
+
+## Features
+
+- AI-powered civic assistant
+- Government and election information
+- Civic education resources
+- Intelligent search and question answering
+- Interactive Gradio interface
+- Fast natural language responses
+
+---
+
+## Technologies
+
+- Python
+- Hugging Face
+- Gradio
+- Sentence Transformers
+- Meta Llama
+- FAISS
+- Transformers
+
+
+## Installation
+
+pip install -r requirements.txt
+
+python app.py
+
+---
+
+## Future Improvements
+
+- Voice assistant
+- Multilingual support
+- Personalized civic learning
+- Interactive quizzes
+- Expanded knowledge base
+
+---
+## Hugging Face README
+
 ---
 title: ScribbleVibe
 emoji: 👀
