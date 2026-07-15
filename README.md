@@ -6,7 +6,7 @@ An AI-powered civic engagement platform that helps users better understand gover
 
 ## Live Demo
 
-https://huggingface.co/spaces/eva1267890/CIVICPULSE
+https://eva1267890-civicpulse.hf.space
 
 ---
 
